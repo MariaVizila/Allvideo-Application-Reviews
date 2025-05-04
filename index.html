@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Review Applications</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2f3136;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-box,
+    .app-container {
+      background-color: #202225;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .login-box h2 {
+      text-align: center;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      border: 1px solid #7289DA;
+      border-radius: 6px;
+      background-color: #2c2f33;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #7289DA;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .app-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .app {
+      background-color: #2c2f33;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #7289DA;
+    }
+
+    .app p {
+      margin: 6px 0;
+      word-wrap: break-word;
+    }
+
+    .delete-button {
+      background-color: #ff4c4c;
+      border: none;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    #error-msg {
+      color: #ff0000;
+      text-align: center;
+      margin-bottom: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Password Login -->
+  <div class="login-box" id="loginBox">
+    <h2>Enter Staff Password</h2>
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="checkPassword()">Enter</button>
+    <div id="error-msg"></div>
+  </div>
+
+  <!-- Application Review -->
+  <div class="app-container" id="appContainer" style="display: none;">
+    <h2>Submitted Applications</h2>
+    <div id="applications"></div>
+  </div>
+
+  <script>
+    const PASSWORD = "AllVideo$147"; // change to your desired password
+
+    function checkPassword() {
+      const enteredPassword = document.getElementById('password').value;
+      if (enteredPassword === PASSWORD) {
+        document.getElementById('loginBox').style.display = "none";
+        document.getElementById('appContainer').style.display = "block";
+        loadApplications();
+      } else {
+        document.getElementById('error-msg').textContent = "Incorrect password. Please try again.";
+        document.getElementById('error-msg').style.display = "block";
+      }
+    }
+
+    function loadApplications() {
+      const apps = JSON.parse(localStorage.getItem("applications") || "[]");
+      const container = document.getElementById("applications");
+      container.innerHTML = "";
+
+      if (apps.length === 0) {
+        container.innerHTML = "<p>No applications submitted yet.</p>";
+        return;
+      }
+
+      apps.forEach((app, index) => {
+        const div = document.createElement("div");
+        div.className = "app";
+        div.innerHTML = Object.entries(app)
+          .map(([q, a]) => `<p><strong>${q}:</strong> ${a}</p>`)
+          .join("") +
+          `<button class="delete-button" onclick="deleteApplication(${index})">Delete Application</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteApplication(index) {
+      let apps = JSON.parse(localStorage.getItem("applications") || "[]");
+      apps.splice(index, 1);
+      localStorage.setItem("applications", JSON.stringify(apps));
+      loadApplications();
+    }
+  </script>
+
+</body>
+</html>
